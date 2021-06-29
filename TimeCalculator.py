@@ -1,5 +1,5 @@
 
-def add_time(start, duration):
+def add_time(start, duration, day = None):
 
     starthr = int(start.split(":")[0])
     startmin = int(start.split(":")[1].split()[0])
@@ -7,34 +7,46 @@ def add_time(start, duration):
 
     durationhr = int(duration.split(":")[0])
     durationmin = int(duration.split(":")[1])
-    
-    if durationhr > 24:
-        addday = int(durationhr / 24)
-        addhr = (float(durationhr / 24) - addday) * 24
-        if startmin + durationmin > 60:
-            resmin = startmin + durationmin - 60
-            addhr = addhr + 1
-        else:
-            resmin = startmin + durationmin
-        if starthr + addhr > 12:
-            reshr = starthr + addhr - 12
-            addday = addday + 1
-        if addhr >= 12:
-            if AMPM == "AM":
-                newAMPM = "PM"
-            if AMPM == "PM":
-                newAMPM = "AM"
 
-#    if startmin + durationmin > 60:
-#        resmin = startmin + durationmin - 60
-#        addhr = 1
-#    else:
-#        resmin = startmin + durationmin
+    week_days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 
-#    while starthr + durationhr > 12:
-#        res = starthr + durationhr - 12
-#        addday = 1
+    reshr = 0
+    addedday = 0
+    newAMPM = AMPM
+    strday = ""
 
-    return str(reshr) + ":" + str(resmin) + " " + newAMPM + " (" + str(addday) + " days later)"
+    #Calculate minutes
+    addedhr = (startmin + durationmin) / 60
+    resmin = (addedhr - int(addedhr)) * 60
 
-print(add_time("6:30 PM", "205:12"))
+    #Calculate hours
+    addedday = addedday + (durationhr / 24)
+    addedhr = addedhr + ((addedday - int(addedday)) * 24)
+    reshr = reshr + int(addedhr) + starthr
+
+    if reshr >= 12 and AMPM == "PM":
+        reshr = reshr - 12
+        if reshr == 0:
+            reshr = 12
+        addedday = int(addedday) + 1
+        newAMPM = "AM"
+
+    if reshr >= 12 and AMPM == "AM":
+        reshr = reshr - 12
+        if reshr == 0:
+            reshr = 12
+
+    if addedday > 1:
+        stradded = " (" + str(int(addedday)) + " days later)"
+    elif addedday == 1:
+        stradded = " (next day)"
+    else:
+        stradded = ""
+
+    if day != None:
+        a = week_days.index(day) + int(addedday)
+        strday = ", " + week_days[a]
+
+    return str(reshr) + ":" + str('{:02d}'.format(int(resmin))) + " " + newAMPM + strday + stradded
+
+print(add_time("10:10 PM", "3:30"))
