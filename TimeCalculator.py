@@ -8,7 +8,7 @@ def add_time(start, duration, day = None):
     durationhr = int(duration.split(":")[0])
     durationmin = int(duration.split(":")[1])
 
-    week_days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+    week_days = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"]
 
     reshr = 0
     addedday = 0
@@ -18,7 +18,7 @@ def add_time(start, duration, day = None):
     #Calculate minutes
     addedhr = (startmin + durationmin) / 60
     resmin = (addedhr - int(addedhr)) * 60
-
+    
     #Calculate hours
     addedday = addedday + (durationhr / 24)
     addedhr = addedhr + ((addedday - int(addedday)) * 24)
@@ -35,6 +35,7 @@ def add_time(start, duration, day = None):
         reshr = reshr - 12
         if reshr == 0:
             reshr = 12
+        newAMPM = "PM"
 
     if addedday > 1:
         stradded = " (" + str(int(addedday)) + " days later)"
@@ -44,9 +45,13 @@ def add_time(start, duration, day = None):
         stradded = ""
 
     if day != None:
-        a = week_days.index(day) + int(addedday)
-        strday = ", " + week_days[a]
+        week = int(addedday) / 7
+        d = (week - int(week)) * 7
+        a = week_days.index(day.lower()) + int(d)
+        if a == 7:
+            a = 0
+        strday = ", " + week_days[a].capitalize()
 
-    return str(reshr) + ":" + str('{:02d}'.format(int(resmin))) + " " + newAMPM + strday + stradded
+    return str(reshr) + ":" + str('{:02d}'.format(int(round(resmin, 0)))) + " " + newAMPM + strday + stradded
 
-print(add_time("10:10 PM", "3:30"))
+print(add_time("11:40 AM", "0:25"))
